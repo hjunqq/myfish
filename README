@@ -1,0 +1,13 @@
+1.	Install virtualenv
+		pip install virtualenv
+ 	Activate
+ 		vitrualenv env
+ 		env\scripts\Activate 	windows
+ 		source env\scripts\Activate.sh 
+2.	Install requirements
+		(env)pip install -i requirements.txt
+3.	Migrate the database
+		(env)python manage.py makemigrations
+		(env)python manage.py migrate
+		(env)python manage.py createsuperuser
+4.	Goto http://localhost/

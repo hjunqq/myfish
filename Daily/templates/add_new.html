@@ -1,0 +1,141 @@
+{% extends "base.html" %} {% load static from staticfiles %} {% load comments %} {% block head %}
+<!-- Standard Meta -->
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<title>添加-Daily</title>
+<!--Bootstrap core CSS-->
+<link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+<!-- Custom styles for this template -->
+<link href="{%static "css/homepage.css" %}" rel="stylesheet">
+<!-- buttons -->
+<link href="{%static "css/buttons.css" %}" rel="stylesheet">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins)-->
+<script src="{% static "js/jquery.min.js" %}"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+<script>
+$(document).ready(function() {
+    $.ajaxSetup({
+        data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+    });
+    $('#add_new_form').submit(function() {
+        var mainimage = $('#mainimage').val();
+        var sentence = $('#sentence').val();
+        if (mainimage == '' && sentence == '') {
+            $('#add_error').show();
+            setTimeout(function() {
+                $("#add_error").hide();
+            }, 5000);
+            return false;
+        }
+        var formData = new FormData($("#add_new_form")[0]);
+        $.ajax({
+            type: "POST",
+            processData: false,
+            contentType: false,
+            data: formData,
+            url: "{% url 'daily_add' %}",
+            cache: false,
+            dataType: 'html',
+            beforeSend: function() {
+                console.log('beforeSend');
+            },
+            success: function() {
+                console.log('success');
+                window.location = '{% url "daily_home" %}'
+            },
+            error: function() {
+                console.log('error');
+            },
+        });
+        return false;
+    });
+    {% if not addtivity %}
+        var wait = 5;
+        timeOut();
+        function timeOut(){
+            if (wait==0){
+                window.location = '{% url "daily_home" %}';
+            }else{
+                setTimeout(function(){
+                    wait--;
+                    $('#jumpmsg').text(wait);
+                    timeOut();
+                },1000);
+            }
+        }
+        
+    {% endif %}
+});
+</script>
+<script>
+$(document).on('change', '.btn-file :file', function() {
+    var input = $(this),
+        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.trigger('fileselect', [numFiles, label]);
+});
+$(document).ready(function() {
+    $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+
+        var input = $(this).parents('.input-group').find(':text'),
+            log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+        if (input.length) {
+            input.val(log);
+        } else {
+            if (log) alert(log);
+        }
+
+    });
+});
+</script>
+{% endblock %} {% block content %}
+
+<body>
+    {% include "daily_navbar.html" %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+                <div class="homeleft">
+                {% if addtivity %}
+                    <form id="add_new_form" action="{% url 'daily_add' %}" method="post" enctype="multipart/form-data" class="form-group" name="add_new_form">
+                        {% csrf_token %}
+                        <h2 for="mainimage">选择一张图片</h2>
+                        <div id="add_error" style="display:none;">
+                            <p class="bg-warning">选择图片或者填写一句话</p>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <span class="btn btn-primary btn-file">
+                                    浏览&hellip; <input id="mainimage" name="mainimage" type="file" single>
+                                </span>
+                            </span>
+                            <input type="text" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <h2 for="sentence">填写一句话</h2>
+                            <textarea type="text" id="sentence" name="sentence" row="3" class="form-control" placeholder="一句话" autofocus></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="author" class="sr-only">出自</label>
+                            <input type="text" id="author" name="author" class="form-control" placeholder="...出自">
+                        </div>
+                        <button type="submit" name="submit" class="btn btn-lg btn-default btn-block">提交</button>
+                    </form>
+                {% else %}
+                    <div class="add-block">
+                    <p class="lead" >今天添加过了，正在返回首页<strong id="jumpmsg"></strong>s</p>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

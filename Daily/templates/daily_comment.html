@@ -1,0 +1,9 @@
+
+{% load comments %}
+{% get_comment_count for icontent as comment_count %} {% get_comment_list for icontent as comment_list %} {% for comment in comment_list %}
+<blockquote class="blockquote">
+    <p>{{comment.comment}}</p>
+    <footer>By
+        <cite title="Source Title">{{comment.user_name}}</cite>
+    </footer>
+</blockquote>{% endfor %}

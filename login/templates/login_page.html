@@ -1,0 +1,105 @@
+{% extends "base.html" %} {% load static from staticfiles %} {% block head %}
+<!-- Standard Meta -->
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<title>登陆-Daily</title>
+<!--Bootstrap core CSS-->
+<link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+<!-- Custom styles for this template -->
+<link href="{%static "css/signin.css" %}" rel="stylesheet">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="{% static "js/jquery.min.js" %}"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+<script>
+$(document).ready(function() {
+    $.ajaxSetup({
+        data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+    });
+    $('#form-signin').submit(function() {
+        var username = $("#username").val();
+        var password = $("#password").val();
+        var remember_me = $("#remember_me").val();
+        $.ajax({
+            type: "POST",
+            data: {
+                username: username,
+                password: password,
+                remember_me: remember_me,
+                next: '{{redirect_to}}',
+            },
+            url: "{% url 'login' %}",
+            cache: false,
+            dataType: "html",
+            success: function(json) {
+                $("#json_msg").hide();
+                $("#form_ajax").show();
+                $("#form_ajax").attr("href", JSON.parse(json));
+                window.location = JSON.parse(json);
+                console.log(json);
+            },
+            error: function(json) {
+                var msg = JSON.parse(json.responseText);
+                $("#json_msg").text(msg);
+                $("#json_msg").addClass("bg-warning");
+            }
+        });
+        return false;
+    });
+});
+</script>
+{% endblock %} {% block content %}
+
+<body>
+    {% include "navbar.html" %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-8 col-lg-9">
+                <div class="siginleft">
+                    <blockquote class="blockquote-reverse">
+                        <p>You can cut all the flowers but you cannot keep spring from coming.</p>
+                        <footer>Someone famous in
+                            <cite title="Source Title">Pablo Neruda</cite>
+                        </footer>
+                    </blockquote>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                <form class="form-signin" id="form-signin" method="post" action="/login/?next={{redirect_to}}">
+                    <h2 class="form-signin-heading">请登录</h2> {% csrf_token %}
+                    <p id="json_msg"></p>
+                    <div class="form-group has-feedback">
+                        <div class="input-group">
+                            <label for="username" class="sr-only">用户名</label>
+                            <span class="input-group-addon"><div class="glyphicon glyphicon-user"></div></span>
+                            <input type="username" id="username" name="username" class="form-control" placeholder="用户名" required autofocus>
+                        </div>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <div class="input-group">
+                            <label for="password" class="sr-only">密码</label>
+                            <span class="input-group-addon"><div class="glyphicon glyphicon-lock"></div></span>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="密码" required>
+                        </div>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="remember_me" name="remember_me" value="false">记住我</input>
+                        </label>
+                    </div>
+                    <button class="btn btn-lg btn-default btn-block " type="submit">登录</button>
+                    <input type="hidden" name="next" value="{{redirect_to}}" />
+                    <div id="form_ajax" style="display:none;">
+                        <p class="bg-success">登陆成功，正在跳转</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

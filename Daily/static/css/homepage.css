@@ -1,0 +1,70 @@
+body,
+button,
+input,
+select,
+textarea,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: Microsoft YaHei, '宋体', Tahoma, Helvetica, Arial, "\5b8b\4f53", sans-serif;
+}
+
+body {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    margin: 10px auto;
+    /*background-image: url(/static/img/background.jpg);*/
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+.navbar {
+    background: rgba(255, 255, 255, 0.618);
+}
+
+.homeleft .img-responsive {
+    max-height: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.like_button {
+    margin-top: 10px;
+}
+
+.add-block {
+    margin: 100px auto;
+    text-align: center;
+}
+
+.add-block .or {
+    padding-bottom: 30px;
+    margin: 30px, auto, 30px, auto;
+}
+
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+.btn-file input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  font-size: 100px;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  background: red;
+  cursor: inherit;
+  display: block;
+}
+input[readonly] {
+  background-color: white !important;
+  cursor: text !important;
+}

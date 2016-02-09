@@ -1,0 +1,71 @@
+{% load comments %} {# {% load bootstrap %} #}
+<hr/>
+<form class="display_comments" id="display_comments" style="display:none;">
+    <button type="submit" name="submit" class="btn btn-lg btn-default btn-block">刷新评论</button>
+</form>
+{% get_comment_count for comment_object as comment_count %} {% if comment_count > 0 %}
+<section id="comments">
+    <h3>
+    共{{ comment_count }}条评论
+</h3> {% get_comment_list for comment_object as comment_list %} {% for comment in comment_list %}
+    <blockquote class="blockquote">
+        <p>{{comment.comment}}</p>
+        <footer>By
+            <cite title="Source Title">{{comment.user_name}}</cite>
+            <cite title="Source Title">{{comment.submit_date}}</cite>
+        </footer>
+    </blockquote>{% endfor %}
+</section>
+{% endif %}
+<section id="comment">
+    {% if user.is_authenticated %} {% get_comment_form for comment_object as form %}
+    <form action="{% comment_form_target %}" method="POST" id='comment_form'>
+        {% csrf_token %} {{ form.object_pk }} {{ form.content_type }} {{ form.timestamp }} {{ form.site }} {{ form.submit_date }} {{ form.security_hash }}
+        <input id="id_honeypot" name="honeypot" type="text" style="display:none">
+        <input id="id_name" maxlength="50" name="name" type="text" value="{{user}}" style="display:none">
+        <input id="id_email" name="email" type="email" value="example@example.com" style="display:none">
+        <input id="id_url" name="url" type="url" value="http://localhost/" style="display:none">
+        <textarea class="form-control" id="id_comment" name="comment" rows="3" placeholder="Say something about what your are thinking." required="required"></textarea>
+        <input type="hidden" name="next" value="{% if next_url_name %}{% url next_url_name %}{% else %}{{ request.get_full_path }}{% endif %}" />
+        <input class="btn btn-primary" type="submit" value="添加评论" id="id_submit" />
+    </form>
+    {% else %} 想要评论？ 只要<a href="{% url 'account_login' %}?next={{ request.get_full_path }}">登陆</a>就可以 {% endif %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#comment_form').submit(function() {
+            $.ajax({
+                type: "POST",
+                data: $('#comment_form').serialize(),
+                url: "{% comment_form_target %}",
+                cache: false,
+                dataType: "html",
+                success: function(html, textStatus) {
+                    console.log('success');
+                    $('#comment_form')[0].reset();
+                    window.location.reload();
+
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    console.log('error');
+                }
+            });
+            return false;
+        });
+    });
+    $('#display_comments{{icontent.pk}}').submit(function() {
+        $.ajax({
+            type: "POST",
+            cache: false,
+            dataType: "html",
+            success: function(msg) {
+                console.log('success');
+                $('#cmt{{icontent.pk}}').html(msg);
+            },
+            error: function(msg) {
+                console.log(msg);
+            }
+        });
+        return false;
+    });
+    </script>
+</section>

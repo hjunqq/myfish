@@ -1,0 +1,23 @@
+{% extends "andablog/base.html" %} {% load markitup_tags %} {% load andablog_tags %} {% load static from staticfiles %} {% load bootstrap3 %} {% block andablog_meta %}
+<meta name="description" content="添加文章"> {% endblock %} {% block andablog_head_extra %}
+<link href="/static/markitup/skins/simple/style.css" type="text/css" media="screen" rel="stylesheet" />
+<link href="/static/markitup/sets/markdown/style.css" type="text/css" media="screen" rel="stylesheet" />
+<script type="text/javascript" src="/static/markitup/ajax_csrf.js"></script>
+<script type="text/javascript" src="/static/markitup/jquery.markitup.js"></script>
+<script type="text/javascript" src="/static/markitup/sets/markdown/set.js"></script>
+<!-- Pin -->
+<script src="{% static 'js/jquery.pin.js' %}"></script>
+{% endblock %} {% block andablog_page_title %} 修改-{{entry.title}} {% endblock %} {% block andablog_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+            <form action="" method="post">{% csrf_token %}{% bootstrap_form form %} {% buttons %}
+                <button type="submit" class="btn btn-primary">
+                    确定
+                </button>
+                {% endbuttons %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

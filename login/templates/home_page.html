@@ -1,0 +1,167 @@
+{% extends "base.html" %} {% load static from staticfiles %} {% load comments %} {% block head %}
+<!-- Standard Meta -->
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<title>Daily</title>
+<!--Bootstrap core CSS-->
+<link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+<!-- Custom styles for this template -->
+<link href="{%static "css/homepage.css" %}" rel="stylesheet">
+<!-- buttons -->
+<link href="{%static "css/buttons.css" %}" rel="stylesheet">
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins)-->
+<script src="{% static "js/jquery.min.js" %}"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+<script>
+$(document).ready(function() {
+    $('#id_add_new').click(function() {
+        /* Act on the event */
+        location.href='{% url 'add_new_home' %}'
+    });
+    $('.dropdown-toggle').dropdown();
+    $.ajaxSetup({
+        data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+    });
+    $('#id_preivew').remove();
+    {% if dailycontent %}
+        {% for icontent in dailycontent %}
+        $('#comment_form{{icontent.pk}}').submit(function(){
+            $.ajax({
+                type: "POST",
+                data: $('#comment_form{{icontent.pk}}').serialize(),
+                url: "{% comment_form_target %}",
+                cache: false,
+                dataType: "html",
+                success: function(html, textStatus) {
+                    console.log('success');
+                    location.reload();
+                    $('#comment_form{{icontent.pk}}')[0].reset();
+
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    console.log('error');
+                }
+            });
+            return false;
+        });
+    
+        $('#like_form{{icontent.pk}}').submit(function(){
+            $.ajax({
+                type: "POST",
+                data: {liked_item:{{icontent.pk}}},
+                url: "{% url 'home' %}",
+                cache: false,
+                dataType: "html",
+                success: function(msg) {
+                    
+                    console.log(msg);
+                    location.reload();
+                },
+                error: function(msg){
+                    console.log(msg);
+                }
+            });
+            return false;
+        });
+        {% endfor %}
+    {% endif %}
+})
+</script>
+{% endblock %} {% block content %}
+
+<body>
+    {% include "navbar.html" %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+                <div class="homeleft">
+                {% if dailycontent %}
+                    {% for icontent in dailycontent %}
+                        {% if icontent.img != '' %}
+                            <img src="/media/{{icontent.img}}" class="img-responsive" alt="{{icontent.sentence}}">
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
+                                <form class="like_button" id="like_form{{icontent.pk}}">
+                                {% if  icontent.likednumber > 0  %}
+                                    <button class="button button-glow button-circle button-rounded button-primary"><i class="glyphicon glyphicon-thumbs-up"></i></button>
+                                    <span>by {{icontent.likednumber}}</span>
+                                {% else %}
+                                    <button class="button button-glow button-circle button-border button-primary"><i class="glyphicon glyphicon-thumbs-up"></i></button>
+                                {% endif %}
+                                </form>
+                            </div>
+                            <div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
+                            {% if icontent.sentence != '' %}
+                                <blockquote class="blockquote-reverse">
+                                    <p>{{icontent.sentence}}</p>
+                                    <footer>By
+                                        <cite title="Source Title">{{icontent.author}}</cite>
+                                    </footer>
+                                    <footer>Post By
+                                        <cite title="Source Title">{{icontent.user}}</cite>
+                                    </footer>
+                                </blockquote>
+                                {% endif %}
+                            </div>
+                        </div>
+                    
+                        <div id="cmt">
+                            {% get_comment_count for icontent as comment_count %} 
+                            {% get_comment_list for icontent as comment_list %}
+                            {% for comment in comment_list %}
+                            <blockquote class="blockquote">
+                                
+                                <p>{{comment.comment}}</p>
+                                <footer>By
+                                    <cite title="Source Title">{{comment.user_name}}</cite>
+                                </footer>
+                                
+                            </blockquote>{% endfor %}
+                        </div>
+                        <div id="comment_form_message" style="display:none;">
+                            <p class="bg-success">提交失败</p>
+                        </div>
+                        {% get_comment_form for icontent as dailycomment_form %}
+                        <form action="{% comment_form_target %}" method="post" id="comment_form{{icontent.pk}}">
+                            {% csrf_token %} {{ dailycomment_form.object_pk }} {{ dailycomment_form.content_type }} {{ dailycomment_form.timestamp }} {{ dailycomment_form.site }} {{ dailycomment_fomr.submit_date }} {{ dailycomment_form.security_hash }}
+                            <input id="id_honeypot" name="honeypot" type="text" style="display:none">
+                            <input id="id_name" maxlength="50" name="name" type="text" value="{{user}}" style="display:none">
+                            <input id="id_email" name="email" type="email" value="example@example.com" style="display:none">
+                            <input id="id_url" name="url" type="url" value="http://localhost/" style="display:none">
+                            <h2>Comment<small> and Feelling</small></h2>
+                            <textarea class="form-control" id="id_comment" name="comment" rows="3" placeholder="Say something about what your are thinking." required="required"></textarea>
+                            <button type="submit" name="submit" id="id_post"class="btn btn-lg btn-default btn-block">提交</button>
+                        </form>
+                    {% endfor %}
+                {% endif %}
+
+                {% if additivity %}
+                    <div class="add-block">
+                    {% if dailystat %}
+                    <div class='or'>Or</div>
+                    {% endif %}
+                    
+                    <button class="button button-royal button-circle button-giant" id="id_add_new"><i class="glyphicon glyphicon-plus"></i></button>
+                    <p>添加一张照片，一句话</p>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+            {% if dailystat %}
+                
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

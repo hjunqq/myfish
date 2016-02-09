@@ -1,0 +1,6 @@
+
+        {% if icontent.likedby.count > 0 %}
+        <button class="button button-glow button-circle button-rounded button-primary"><i class="glyphicon glyphicon-thumbs-up"></i></button>
+        <span>by {{icontent.likedby.count }}</span> {% else %}
+        <button class="button button-glow button-circle button-border button-primary"><i class="glyphicon glyphicon-thumbs-up"></i></button>
+        {% endif %}

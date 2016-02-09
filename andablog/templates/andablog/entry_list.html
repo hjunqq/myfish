@@ -1,0 +1,45 @@
+{% extends "andablog:andablog/base.html" %} {% load static from staticfiles %}{% load andablog_tags %} {% block andablog_meta %}
+<meta name="description" content="Latest blog entries"> {% endblock %} {% block andablog_head_extra %}
+<!-- Pin -->
+<script src="{% static 'js/jquery.pin.js' %}"></script>
+<!-- buttons -->
+<link href="{%static 'css/buttons.css' %}" rel="stylesheet">
+{% endblock %} {% block andablog_page_title %} Blog {% endblock %} {% block andablog_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+            {% for entry in entries %}
+            <div class="blog-post">
+                <h2 class="blog-post-title">
+                {% if entry.is_published %}
+                    <a href="{{ entry.get_absolute_url }}">{{ entry.title }}</a>
+                {% else %}
+                <a href="{{ entry.get_update_url }}">{{ entry.title }}</a>
+                <span class="label label-default">草稿</span>
+                {% endif %}
+                </h2>
+                <p class="blog-post-meta">{{ entry.published_timestamp|date:"DATE_FORMAT" }}{% if entry.author %} by {{ entry.author }}{% endif %}</p>
+                <p>
+                    {# TODO: "Better support for truncating markup" #2 #} {# Truncate derived from: Avg reading speed (3.33 words/s) * Average attention span (8s) #} {{ entry.content|truncatewords_html:26 }} 
+                    {% if entry.is_published %}
+                    <a href="{{ entry.get_absolute_url }}">继续阅读... {% include "andablog/comments_count_snippet.html" with comment_object=entry %}</a>
+                    {% else %}
+                        <a href="{{ entry.get_update_url }}">继续修改... </a>
+                    {% endif %}
+                </p>
+            </div>
+            <!-- /.blog-post -->
+            {% endfor %}
+        </div>
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2" id="pin_note">
+            <h3></h3>
+            <h3>欢迎回来！</h3>
+            <div class="btn-group-vertical" role="group" >
+            <a type="button" class="btn btn-default" href="{% url 'andablog:entrycreate' %}">增加</a>
+            <a type="button" class="btn btn-default" href="{% url 'andablog:entrylist' %}">查看已发布列表</a>
+            <a type="button" class="btn btn-default" href="{% url 'andablog:entrylistunpublished' %}">查看未发布列表</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "andablog/pagination_snippet.html" with page_obj=page_obj %} {% endblock %}

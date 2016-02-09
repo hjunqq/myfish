@@ -1,0 +1,23 @@
+{% extends "andablog:base.html" %}
+{% load staticfiles %}
+
+{% block subtitle %}
+    {% block andablog_page_title %}
+    {% endblock %}
+{% endblock %}
+{% block head_meta %}
+{% block andablog_meta %}
+{% endblock %}
+{% endblock %}
+{% block head_styles %}
+	{% include 'andablog:navbar_head.html' %}
+    {% block andablog_head_extra %}
+        <link rel="stylesheet" href="{% static 'css/andablog.css' %}">
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+	{% include 'andablog:blog_navbar.html' %}
+    {% block andablog_content %}
+    {% endblock %}
+{% endblock %}
