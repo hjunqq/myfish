@@ -11,6 +11,13 @@ from django.utils import timezone
 from django.core import serializers
 from django.http import JsonResponse
 
+import urllib,urllib2
+from bs4 import BeautifulSoup
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
+import os
+from cStringIO import StringIO
+
 import calendar
 import pytz
 import json
@@ -19,8 +26,40 @@ import datetime
 from .models import *
 from .forms import *
 
+def get_bing_dailysens():
+    """获得bing每日一句"""
+    url = "http://cn.bing.com/dict/clienthomepagev2"
+    content = urllib2.urlopen(url)
+    soup = BeautifulSoup(content, "html.parser")
+    dailysens = soup.find_all("div",class_="client_daily_sens_bar")[0]
+    content.close() 
+    return dailysens.text
+
+def get_bing_wallpaper():
+    idx = '0'
+    url = 'http://www.bing.com/HPImageArchive.aspx?format=xml&idx=' + idx + '&n=1&mkt=zh-CN'
+    #ru-RU, because they always have 1920x1200 resolution pictures
+    #url = "http://www.bing.com/?mkt=zh-CN"
+    content = urllib2.urlopen(url)
+    soup = BeautifulSoup(content, "html.parser")
+    
+    picurl = soup.find_all("url")[0]
+    url = 'http://www.bing.com' + picurl.string
+    #now = datetime.datetime.now()
+    #picPath = now.strftime('BingWallpaper-%Y-%m-%d') + '.jpg'
+    #img_temp = NamedTemporaryFile(delete=True)
+    #img_temp.write(urllib.urlretrieve(url.replace('_1366x768', '_1920x1200'), picPath))
+    #img_temp.flush()
+    #if not os.path.isfile(picPath):
+        #urllib.urlretrieve(url.replace('_1366x768', '_1920x1200'), picPath)
+        ##urllib.urlretrieve(url, picPath)
+    #else:
+        #print "File exists."
+    content.close() 
+    return url.replace('_1366x768', '_1920x1200')
+
 def get_Additivity(user,date):
-    """判断可加性"""
+    """判断可添加性"""
     try:
         today = DailyContent.objects.get(user=user,date=date)
         Additivity = False
@@ -74,16 +113,25 @@ def add_new(request):
     user = request.user
     date = timezone.localtime(timezone.now()).date()
     addtivity = get_Additivity(user, date)
+    dailysens = get_bing_dailysens()
+    dailypic = get_bing_wallpaper()
     if request.method == "POST":
         form = AddForm(request.POST,request.FILES)
         if form.is_valid():
             img = form.cleaned_data['mainimage'] 
+            url = form.cleaned_data['mainimageurl']
             sentence = form.cleaned_data['sentence']
             author = form.cleaned_data['author']
             try:
                 dailycontent = DailyContent.objects.get_or_create(user = user,
                                                                   date = date)[0]
-                dailycontent.img = img
+                if img:
+                    dailycontent.img = img
+                if url:
+                    picPath = date.strftime('BingWallpaper-%Y-%m-%d') + '.jpg'
+                    s = StringIO()
+                    s.write(urllib2.urlopen(url).read())
+                    dailycontent.img.save(picPath,File(s),save=True)
                 dailycontent.sentence = sentence
                 dailycontent.author = author
                 dailycontent.save()

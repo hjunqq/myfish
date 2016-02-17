@@ -3,6 +3,7 @@ from django import forms
 
 class AddForm(forms.Form):
     mainimage = forms.ImageField(label='mainimage',required=False)
+    mainimageurl = forms.CharField(label='mainimageurl',required=False)
     sentence = forms.CharField(label='sentence',max_length=500,required=False)
     author = forms.CharField(label='author',max_length=100,required=False)
     

@@ -19,6 +19,7 @@ parts/
 sdist/
 var/
 staticfiles/
+media/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -100,3 +101,4 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+*.sqlite3
