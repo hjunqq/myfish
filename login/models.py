@@ -15,7 +15,7 @@ class UserLogInfo(models.Model):
     UserAgent = models.CharField(max_length=150)
     
     def __unicode__(self):
-        return User.username
+        return str(self.user.username)
     
     class Meta:
         db_table = 'UserLogInfo'

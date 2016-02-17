@@ -53,8 +53,8 @@ def login_page(request):
                     logInIP = request.META['HTTP_CF_CONNECTING_IP']
                 else:
                     logInIP = request.META['REMOTE_ADDR']
-                logInTime = timezone.now()
-                logOutTime = timezone.now()
+                logInTime = timezone.localtime(timezone.now())
+                logOutTime = timezone.localtime(timezone.now())
                 UserAgent = str(parse(request.META.get('HTTP_USER_AGENT')))
                 try:
                     UItem= UserLogInfo.objects.create(user = user,
@@ -86,7 +86,7 @@ def logout_page(request):
     try :
         user = request.user
         userItem = UserLogInfo.objects.get(user=user)
-        userItem.logOutData = timezone.now()
+        userItem.logOutData = timezone.localtime(timezone.now())
         userItem.save()
     except:
         pass

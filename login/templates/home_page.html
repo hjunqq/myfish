@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% load static from staticfiles %} {% load comments %} {% block head %}
+{% extends "base.html" %}{% load tz %} {% load static from staticfiles %} {% load comments %} {% block head %}
 <!-- Standard Meta -->
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -74,7 +74,6 @@ $(document).ready(function() {
 })
 </script>
 {% endblock %} {% block content %}
-
 <body>
     {% include "navbar.html" %}
     <div class="container-fluid">

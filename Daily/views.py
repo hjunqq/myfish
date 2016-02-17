@@ -28,7 +28,7 @@ def get_Additivity(user,date):
         Additivity = True
     return Additivity
 def get_commentstat(date):
-    if date < timezone.now().date():
+    if date < timezone.localtime(timezone.now()).date():
         commentability = False
     else:
         commentability = True
@@ -60,7 +60,7 @@ def get_next_date(date):
     return next_date
 
 def get_prev_date(date):
-    prev_set = DailyContent.objects.filter(date__lt=date)
+    prev_set = DailyContent.objects.filter(date__lt=date).order_by('-date')
     if prev_set:
         prev_date = prev_set[0].date
     else:
@@ -72,7 +72,7 @@ def get_prev_date(date):
 def add_new(request):
     """add new home"""
     user = request.user
-    date = timezone.now().date()
+    date = timezone.localtime(timezone.now()).date()
     addtivity = get_Additivity(user, date)
     if request.method == "POST":
         form = AddForm(request.POST,request.FILES)
@@ -105,7 +105,7 @@ def daily_page(request):
             response = HttpResponseRedirect('/login/')
             return response  """   
     user = request.user
-    date = timezone.now().date()
+    date = timezone.localtime(timezone.now()).date()
     additivity = get_Additivity(user, date)    
     dailycontent = get_daily_content(date)
     prev_date = get_prev_date(date)
@@ -117,7 +117,7 @@ def daily_page(request):
 def daily_page_json(request):
     """daily_page_json"""
     user = request.user
-    date = timezone.now().date()
+    date = timezone.localtime(timezone.now()).date()
     if request.method == "POST":
         formtype = request.POST['formtype']
         if formtype == 'like':
