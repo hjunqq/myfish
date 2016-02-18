@@ -32,8 +32,12 @@ def get_bing_dailysens():
     content = urllib2.urlopen(url)
     soup = BeautifulSoup(content, "html.parser")
     dailysens = soup.find_all("div",class_="client_daily_sens_bar")[0]
+    dailysens_en = dailysens.find_all("div",class_="client_daily_text_en")[0]
+    dailysens_cn = dailysens.find_all("div",class_="client_daily_text_zh")[0]
+    dailysens_en_text,dailysens_author = dailysens_en.text.split(u"\u2014")
+    dailysens_cn_text = dailysens_cn.text    
     content.close() 
-    return dailysens.text
+    return dailysens_en_text,dailysens_cn_text,dailysens_author
 
 def get_bing_wallpaper():
     idx = '0'
@@ -113,7 +117,7 @@ def add_new(request):
     user = request.user
     date = timezone.localtime(timezone.now()).date()
     addtivity = get_Additivity(user, date)
-    dailysens = get_bing_dailysens()
+    dailysens_en,dailysens_cn,dailysens_author = get_bing_dailysens()
     dailypic = get_bing_wallpaper()
     if request.method == "POST":
         form = AddForm(request.POST,request.FILES)

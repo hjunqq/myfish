@@ -26,11 +26,14 @@ $(document).ready(function() {
     });
     $('#get_bing').click(function() {  
         var input = $(this).parents('.input-group').find(':text');
-        $('#sentence').text("{{dailysens}}");
+        $('#sentence').text("{{dailysens_en}}{{dailysens_cn}}");
+        $('#author').val("{{dailysens_author}}");
         $('#mainimageurl').val("{{dailypic}}");
         $('#mainimageurl').attr("style","display:block");
-        $('#bing_img').text("{{dailypic}}");
-        $('#bing_img').attr("href","{{dailypic}}");
+        $('#bing_img_url').text("下载");
+        $('#bing_img_url').attr("href","{{dailypic}}");
+        $('#bing_img').attr("src","{{dailypic}}");
+        
         get_bing = true;
     });
     $('#add_new_form').submit(function() {
@@ -132,7 +135,8 @@ $(document).ready(function() {
                             <input type="text" class="form-control" readonly>
                         </div>
                         <input type="text" id="mainimageurl" name="mainimageurl" class="form-control" style="display:none">
-                        <a id="bing_img"></a>
+                        <a id="bing_img_url"></a>
+                        <img id="bing_img" class="img-responsive">
                         <div class="form-group">
                             <h2 for="sentence">填写一句话</h2>
                             <textarea type="text" id="sentence" name="sentence" row="3" class="form-control" placeholder="一句话" autofocus></textarea>
@@ -143,7 +147,7 @@ $(document).ready(function() {
                         </div>
                         <button type="submit" name="submit" class="btn btn-lg btn-default btn-block">提交</button>
                     </form>
-                    <button id="get_bing" class="btn btn-lg btn-default btn-block">get_bing</button>
+                    <button id="get_bing" class="btn btn-default">从Bing获取...</button>
                 {% else %}
                     <div class="add-block">
                     <p class="lead" >今天添加过了，正在返回首页<strong id="jumpmsg"></strong>s</p>

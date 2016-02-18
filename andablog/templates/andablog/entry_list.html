@@ -20,7 +20,7 @@
                 </h2>
                 <p class="blog-post-meta">{{ entry.published_timestamp|date:"DATE_FORMAT" }}{% if entry.author %} by {{ entry.author }}{% endif %}</p>
                 <p>
-                    {# TODO: "Better support for truncating markup" #2 #} {# Truncate derived from: Avg reading speed (3.33 words/s) * Average attention span (8s) #} {{ entry.content|truncatewords_html:26 }} 
+                    {# TODO: "Better support for truncating markup" #2 #} {# Truncate derived from: Avg reading speed (3.33 words/s) * Average attention span (8s) #} {{ entry.content|truncatewords_html:10 }} 
                     {% if entry.is_published %}
                     <a href="{{ entry.get_absolute_url }}">继续阅读... {% include "andablog/comments_count_snippet.html" with comment_object=entry %}</a>
                     {% else %}

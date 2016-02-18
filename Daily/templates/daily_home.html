@@ -7,114 +7,45 @@
 <meta name="author" content="">
 <title>Daily</title>
 <!--Bootstrap core CSS-->
-<link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+<link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 <!-- Custom styles for this template -->
-<link href="{%static "css/homepage.css" %}" rel="stylesheet">
+<link href="{%static 'css/homepage.css' %}" rel="stylesheet">
 <!-- buttons -->
-<link href="{%static "css/buttons.css" %}" rel="stylesheet">
+<link href="{%static 'css/buttons.css' %}" rel="stylesheet">
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins)-->
-<script src="{% static "js/jquery.min.js" %}"></script>
+<script src="{% static 'js/jquery.min.js'%}"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 <!-- Pin -->
-<script src="{% static "js/jquery.pin.js" %}"></script>
+<script src="{% static 'js/jquery.pin.js' %}"></script>
 <!-- datepicker -->
-<script src="{% static "datepicker/js/bootstrap-datetimepicker.min.js" %}"></script>
-<link href="{%static "datepicker/css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">
+<script src="{% static 'datepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
+<link href="{%static 'datepicker/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
 <script>
 $(document).ready(function() {
     $('#id_add_new').click(function() {
         /* Act on the event */
-        location.href='{% url 'daily_add' %}'
+        location.href = "{% url 'daily_add' %}"
     });
     $('.dropdown-toggle').dropdown();
 
     $("#pin_note").pin({
-          minWidth: 940
+        minWidth: 940
     })
     $.ajaxSetup({
         data: {
             csrfmiddlewaretoken: '{{ csrf_token }}'
         },
     });
-
-    {% if dailycontent %}
-        {% for icontent in dailycontent %}
-        
-        $('#comment_form{{icontent.pk}}').submit(function(){
-            $.ajax({
-                type: "POST",
-                data: $('#comment_form{{icontent.pk}}').serialize(),
-                url: "{% comment_form_target %}",
-                cache: false,
-                dataType: "html",
-                success: function(html, textStatus) {
-                    console.log('success');
-                    $('#comment_form{{icontent.pk}}')[0].reset();
-                    $('#display_comments{{icontent.pk}}').trigger('submit');
-
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    console.log('error');
-                }
-            });
-            return false;
-        });
-        
-        $('#display_comments{{icontent.pk}}').submit(function(){
-            $.ajax({
-                type: "POST",
-                data: {
-                    formtype:'reloadcomment',
-                    icontent_id:{{icontent.pk}},
-
-                },
-                url: "{% url 'daily_home_json' %}",
-                cache: false,
-                dataType: "html",
-                success: function(msg) {
-                    console.log('success');
-                    $('#cmt{{icontent.pk}}').html(msg);
-                },
-                error: function(msg){
-                    console.log(msg);
-                }
-            });
-            return false;
-        });
-        
-        $('#like_form{{icontent.pk}}').submit(function(){
-            $.ajax({
-                type: "POST",
-                data: {
-                    formtype:'like',
-                    liked_item:{{icontent.pk}},
-
-                },
-                url: "{% url 'daily_home_json' %}",
-                cache: false,
-                dataType: "html",
-                success: function(msg) {
-                    console.log('success');
-                    $('#like_form{{icontent.pk}}').html(msg);
-                },
-                error: function(msg){
-                    console.log(msg);
-                }
-            });
-            return false;
-        });
-        {% endfor %}
-    {% endif %}
-})
+});
 </script>
 <script>
 $(document).ready(function() {
-    $('#prevbtn').click(function(){
-        window.location.href="{% url 'daily' %}spec/{{prev_date|date:'Ymd'}}/" 
+    $('#prevbtn').click(function() {
+        window.location.href = "{% url 'daily' %}spec/{{prev_date|date:'Ymd'}}/"
     });
-    $('#nextbtn').click(function(){
-        window.location.href="{% url 'daily' %}spec/{{next_date|date:'Ymd'}}/" 
+    $('#nextbtn').click(function() {
+        window.location.href = "{% url 'daily' %}spec/{{next_date|date:'Ymd'}}/"
     });
 });
 //     $(window).scroll(function() {  
@@ -129,8 +60,8 @@ $(document).ready(function() {
 //          $('#nextbtn').trigger('click');
 //       };
 
-//   });   
-</script> 
+//   });
+</script>
 {% endblock %} {% block content %}
 
 <body>
@@ -139,85 +70,134 @@ $(document).ready(function() {
         <div class="row">
             <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
                 <div class="homeleft" id="dailycontent">
-                {% if dailycontent %}
-                    {% for icontent in dailycontent %}
-                        {% if icontent.img != '' %}
-                            <img src="/media/{{icontent.img}}" class="img-responsive" alt="{{icontent.sentence}}">
-                        {% endif %}
-                        <div class="row">
-                            <div class="col-xs-4 col-sm-3 col-md-3 col-lg-2" id="likedblock{{icontent.pk}}">
-                                <form class="like_button" id="like_form{{icontent.pk}}">
-                                {% if  icontent.likednumber > 0  %}
-                                    <button class="button button-glow button-circle button-rounded button-primary"><i class="glyphicon glyphicon-thumbs-up"></i></button>
-                                    <span class="badge">by {{icontent.likednumber}}</span>
-                                {% else %}
-                                    <button class="button button-glow button-circle button-border button-primary"><i class="glyphicon glyphicon-thumbs-up"></i></button>
+                    {% if dailycontent %} {% for icontent in dailycontent %} {% if icontent.img != '' %}
+                    <img src="/media/{{icontent.img}}" class="img-responsive" alt="{{icontent.sentence}}"> {% endif %}
+                    <div class="row">
+                        <div class="col-xs-4 col-sm-3 col-md-3 col-lg-2" id="likedblock{{icontent.pk}}">
+                            <form class="like_button" id="like_form{{icontent.pk}}">
+                                {% if icontent.likednumber > 0 %}
+                                <button class="button button-glow button-circle button-rounded button-primary"><i class="glyphicon glyphicon-thumbs-up"></i></button>
+                                <span class="badge">by {{icontent.likednumber}}</span> {% else %}
+                                <button class="button button-glow button-circle button-border button-primary"><i class="glyphicon glyphicon-thumbs-up"></i></button>
                                 {% endif %}
-                                </form>
-                            </div>
-                            <div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
+                            </form>
+                        </div>
+                        <div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
                             {% if icontent.sentence != '' %}
-                                <blockquote class="blockquote-reverse">
-                                    <p>{{icontent.sentence}}</p>
-                                    <footer>By
-                                        <cite title="Source Title">{{icontent.author}}</cite>
-                                    </footer>
-                                    <footer>Post By
-                                        <cite title="Source Title">{{icontent.user}}</cite>
-                                    </footer>
-                                </blockquote>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <form class="display_comments" id = "display_comments{{icontent.pk}}" style="display:none;">
-                            <button type="submit" name="submit" class="btn btn-lg btn-default btn-block">刷新评论</button>
-                        </form>
-                        <div id="cmt{{icontent.pk}}">
-                        
-                            {% get_comment_count for icontent as comment_count %} 
-                            {% get_comment_list for icontent as comment_list %}
-                            {% for comment in comment_list %}
-                            <blockquote class="blockquote">
-                                
-                                <p>{{comment.comment}}</p>
+                            <blockquote class="blockquote-reverse">
+                                <p>{{icontent.sentence}}</p>
                                 <footer>By
-                                    <cite title="Source Title">{{comment.user_name}}</cite>
+                                    <cite title="Source Title">{{icontent.author}}</cite>
                                 </footer>
-                                
-                            </blockquote>{% endfor %}
+                                <footer>Post By
+                                    <cite title="Source Title">{{icontent.user}}</cite>
+                                </footer>
+                            </blockquote>
+                            {% endif %}
                         </div>
-
-                        <div id="comment_form_message" style="display:none;">
-                            <p class="bg-success">提交失败</p>
-                        </div>
-                        {% if commentability %}
-                        {% get_comment_form for icontent as dailycomment_form %}
-                        <form action="{% comment_form_target %}" method="post" id="comment_form{{icontent.pk}}">
-                            {% csrf_token %} {{ dailycomment_form.object_pk }} {{ dailycomment_form.content_type }} {{ dailycomment_form.timestamp }} {{ dailycomment_form.site }} {{ dailycomment_form.submit_date }} {{ dailycomment_form.security_hash }}
-                            <input id="id_honeypot" name="honeypot" type="text" style="display:none">
-                            <input id="id_name" maxlength="50" name="name" type="text" value="{{user}}" style="display:none">
-                            <input id="id_email" name="email" type="email" value="example@example.com" style="display:none">
-                            <input id="id_url" name="url" type="url" value="http://localhost/" style="display:none">
-                            <h2>Comment<small> and Feelling</small></h2>
-                            <textarea class="form-control" id="id_comment" name="comment" rows="3" placeholder="Say something about what your are thinking." required="required"></textarea>
-                            <button type="submit" name="submit" id="id_post"class="btn btn-lg btn-default btn-block">提交</button>
-                        </form>
-                        {% endif %}
-                    {% endfor %}
-                {% else %}
-                    <h2>{{page_msg}}</h2>
-                {% endif %}
-                {% if additivity %}
-                    <div class="add-block">
-                    {% if dailystat %}
-                    <div class='or'>Or</div>
-                    {% endif %}
-                    
-                    <button class="button button-royal button-circle button-giant" id="id_add_new"><i class="glyphicon glyphicon-plus"></i></button>
-                    <p>添加一张照片，一句话</p>
                     </div>
-                {% endif %}
+                    <form class="display_comments" id="display_comments{{icontent.pk}}" style="display:none;">
+                        <button type="submit" name="submit" class="btn btn-lg btn-default btn-block">刷新评论</button>
+                    </form>
+                    <div id="cmt{{icontent.pk}}">
+                        {% get_comment_count for icontent as comment_count %} {% get_comment_list for icontent as comment_list %} {% for comment in comment_list %}
+                        <blockquote class="blockquote">
+                            <p>{{comment.comment}}</p>
+                            <footer>By
+                                <cite title="Source Title">{{comment.user_name}}</cite>
+                            </footer>
+                        </blockquote>{% endfor %}
+                    </div>
+                    <div id="comment_form_message" style="display:none;">
+                        <p class="bg-success">提交失败</p>
+                    </div>
+                    {% if commentability %} {% get_comment_form for icontent as dailycomment_form %}
+                    <form action="{% comment_form_target %}" method="post" id="comment_form{{icontent.pk}}">
+                        {% csrf_token %} {{ dailycomment_form.object_pk }} {{ dailycomment_form.content_type }} {{ dailycomment_form.timestamp }} {{ dailycomment_form.site }} {{ dailycomment_form.submit_date }} {{ dailycomment_form.security_hash }}
+                        <input id="id_honeypot" name="honeypot" type="text" style="display:none">
+                        <input id="id_name" maxlength="50" name="name" type="text" value="{{user}}" style="display:none">
+                        <input id="id_email" name="email" type="email" value="example@example.com" style="display:none">
+                        <input id="id_url" name="url" type="url" value="http://localhost/" style="display:none">
+                        <h2>Comment<small> and Feelling</small></h2>
+                        <textarea class="form-control" id="id_comment" name="comment" rows="3" placeholder="Say something about what your are thinking." required="required"></textarea>
+                        <button type="submit" name="submit" id="id_post" class="btn btn-lg btn-default btn-block">提交</button>
+                    </form>
+                    {% endif %}
+                    <script>
+                    $(document).ready(function() {
+                        $('#comment_form{{icontent.pk}}').submit(function() {
+                            $.ajax({
+                                type: "POST",
+                                data: $('#comment_form{{icontent.pk}}').serialize(),
+                                url: "{% comment_form_target %}",
+                                cache: false,
+                                dataType: "html",
+                                success: function(html, textStatus) {
+                                    console.log('success');
+                                    $('#comment_form{{icontent.pk}}')[0].reset();
+                                    $('#display_comments{{icontent.pk}}').trigger('submit');
+
+                                },
+                                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                    console.log('error');
+                                }
+                            });
+                            return false;
+                        });
+
+                        $('#display_comments{{icontent.pk}}').submit(function() {
+                            $.ajax({
+                                type: "POST",
+                                data: {
+                                    formtype: 'reloadcomment',
+                                    icontent_id: {{icontent.pk}},
+                                },
+                                url: "{% url 'daily_home_json' %}",
+                                cache: false,
+                                dataType: "html",
+                                success: function(msg) {
+                                    console.log('success');
+                                    $('#cmt{{icontent.pk}}').html(msg);
+                                },
+                                error: function(msg) {
+                                    console.log(msg);
+                                }
+                            });
+                            return false;
+                        });
+
+                        $('#like_form{{icontent.pk}}').submit(function() {
+                            $.ajax({
+                                type: "POST",
+                                data: {
+                                    formtype: 'like',
+                                    liked_item: {{icontent.pk}},
+                                },
+                                url: "{% url 'daily_home_json' %}",
+                                cache: false,
+                                dataType: "html",
+                                success: function(msg) {
+                                    console.log('success');
+                                    $('#like_form{{icontent.pk}}').html(msg);
+                                },
+                                error: function(msg) {
+                                    console.log(msg);
+                                }
+                            });
+                            return false;
+                        });
+                    });
+                    </script>
+                    {% endfor %} {% else %}
+                    <h2>{{page_msg}}</h2> {% endif %} {% if additivity %}
+                    <div class="add-block">
+                        {% if dailystat %}
+                        <div class='or'>Or</div>
+                        {% endif %}
+                        <button class="button button-royal button-circle button-giant" id="id_add_new"><i class="glyphicon glyphicon-plus"></i></button>
+                        <p>添加一张照片，一句话</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2" id="pin_note">
@@ -226,24 +206,19 @@ $(document).ready(function() {
                 <a class="button button-glow button-border button-rounded button-primary" href="{% url 'daily' %}">今天</a></li>
                 <p>{{date}}</p>
                 {% ifequal date next_date %}
-                    <button class="button button-highlight button-border button-rounded" id='nextbtn'><i class="glyphicon glyphicon-menu-up" ></i>没有了</button>
+                <button class="button button-highlight button-border button-rounded" id='nextbtn'><i class="glyphicon glyphicon-menu-up"></i>没有了</button>
                 {% else %}
-                    <button class="button button-highlight button-border button-rounded"  id='nextbtn' ><i class="glyphicon glyphicon-menu-up" ></i>后一页</button>
-                {% endifequal %}
-                {% ifequal date prev_date %}
-                    <button class="button button-action button-border button-rounded" id='prevbtn'><i class="glyphicon glyphicon-menu-down" ></i>没有了</button>
+                <button class="button button-highlight button-border button-rounded" id='nextbtn'><i class="glyphicon glyphicon-menu-up"></i>后一页</button>
+                {% endifequal %} {% ifequal date prev_date %}
+                <button class="button button-action button-border button-rounded" id='prevbtn'><i class="glyphicon glyphicon-menu-down"></i>没有了</button>
                 {% else %}
-                    <button class="button button-action button-border button-rounded" id='prevbtn'><i class="glyphicon glyphicon-menu-down" ></i>前一页</button>
+                <button class="button button-action button-border button-rounded" id='prevbtn'><i class="glyphicon glyphicon-menu-down"></i>前一页</button>
                 {% endifequal %}
-                
-                
             </div>
         </div>
         <div class="row">
             <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
-            {% if dailystat %}
-                
-            {% endif %}
+                {% if dailystat %} {% endif %}
             </div>
         </div>
     </div>
