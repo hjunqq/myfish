@@ -34,7 +34,11 @@ def get_bing_dailysens():
     dailysens = soup.find_all("div",class_="client_daily_sens_bar")[0]
     dailysens_en = dailysens.find_all("div",class_="client_daily_text_en")[0]
     dailysens_cn = dailysens.find_all("div",class_="client_daily_text_zh")[0]
-    dailysens_en_text,dailysens_author = dailysens_en.text.split(u"\u2014")
+    if dailysens_en.text.find(u"\u2014") >0:
+        dailysens_en_text,dailysens_author = dailysens_en.text.split(u"\u2014")
+    else:
+        dailysens_en_text = dailysens_en.text
+        dailysens_author = ""
     dailysens_cn_text = dailysens_cn.text    
     content.close() 
     return dailysens_en_text,dailysens_cn_text,dailysens_author
@@ -60,7 +64,11 @@ def get_bing_wallpaper():
     #else:
         #print "File exists."
     content.close() 
-    return url.replace('_1366x768', '_1920x1200')
+    try:
+        urllib2.urlopen(url.replace('_1366x768', '_1920x1200'))
+        return url.replace('_1366x768', '_1920x1200')
+    except:
+        return url
 
 def get_Additivity(user,date):
     """判断可添加性"""
@@ -117,6 +125,7 @@ def add_new(request):
     user = request.user
     date = timezone.localtime(timezone.now()).date()
     addtivity = get_Additivity(user, date)
+    addtivity = True
     dailysens_en,dailysens_cn,dailysens_author = get_bing_dailysens()
     dailypic = get_bing_wallpaper()
     if request.method == "POST":
